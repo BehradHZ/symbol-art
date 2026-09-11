@@ -70,6 +70,9 @@ def image_to_data_url(image: Image.Image) -> str:
     return f"data:image/png;base64,{encoded}"
 
 
+OUTPUT_BG = "#0e1116"
+
+
 def render_preview(art: str, font_path: str, cell_aspect: float, invert: bool) -> Image.Image:
     """Rasterize ASCII output for browsers without changing the text itself."""
     lines = art.splitlines()
@@ -82,8 +85,8 @@ def render_preview(art: str, font_path: str, cell_aspect: float, invert: bool) -
     advance = font.getlength("M")
     line_height = advance / cell_aspect
 
-    background = "#0b0f0c" if invert else "#f7f8f5"
-    foreground = "#d6f5dc" if invert else "#111611"
+    background = OUTPUT_BG if invert else "#f7f8f5"
+    foreground = "#c9ddff" if invert else "#111611"
     canvas = Image.new(
         "RGB",
         (int(longest_line * advance) + 40, int(row_count * line_height) + 40),
