@@ -10,7 +10,7 @@ Turn images into font-aware ASCII art — locally, from a terminal-style web UI 
 
 **Output**
 
-<img src="examples/behrad-output.jpg" width="420" alt="ASCII art output">
+<img src="examples/behrad-output.png" width="420" alt="ASCII art output">
 
 ## Run
 
