@@ -14,7 +14,7 @@ const DEFAULTS = {
   mode: "shape",
   font: "default",
   autocontrast: true,
-  invert: false,
+  invert: true,
 };
 
 const pairedControls = ["width", "contrast", "gamma", "cell_aspect"];
