@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>symbol-art</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="terminal-shell">
+    <header class="terminal-bar">
+      <div class="terminal-title">
+        <span class="prompt-mark">›</span>
+        <span>symbol-art</span>
+        <span class="muted">/ local</span>
+      </div>
+      <div class="terminal-meta">
+        <span id="statusDot" class="status-dot" aria-hidden="true"></span>
+        <span id="status" role="status" aria-live="polite">booting</span>
+      </div>
+    </header>
+
+    <div class="terminal-grid">
+      <aside class="controls" aria-label="Conversion options">
+        <div class="prompt-line">
+          <span class="prompt-path">~</span>
+          <span class="prompt-char">$</span>
+          <span>convert --live</span>
+        </div>
+
+        <section class="control-group">
+          <div class="group-label">input</div>
+          <button id="upload" class="command-button primary" type="button">[ open image ]</button>
+          <button id="demo" class="command-button" type="button">[ load demo ]</button>
+          <input id="file" type="file" accept="image/*" hidden>
+          <div class="file-readout">
+            <span class="muted">file</span>
+            <span id="filename">behrad-input.jpg</span>
+          </div>
+          <div id="dimensions" class="file-readout muted">—</div>
+        </section>
+
+        <section class="control-group">
+          <div class="group-label">geometry</div>
+
+          <label class="control-row" for="width">
+            <span>--width</span>
+            <output id="widthOutput">40</output>
+          </label>
+          <input id="width" type="range" min="8" max="180" step="1" value="40">
+          <input id="widthValue" class="number-input" type="number" min="1" max="500" step="1" value="40" aria-label="Width in columns">
+
+          <div class="inline-control">
+            <label class="switch-row" for="autoHeight">
+              <input id="autoHeight" type="checkbox" checked>
+              <span>--auto-height</span>
+            </label>
+            <input id="height" class="number-input compact" type="number" min="1" max="500" step="1" value="24" disabled aria-label="Height in rows">
+          </div>
+
+          <label class="control-row" for="cell_aspect">
+            <span>--cell-aspect</span>
+            <output id="cell_aspectOutput">0.50</output>
+          </label>
+          <input id="cell_aspect" type="range" min="0.2" max="1" step="0.01" value="0.5">
+          <input id="cell_aspectValue" class="number-input" type="number" min="0.1" max="2" step="0.01" value="0.5" aria-label="Character aspect ratio">
+        </section>
+
+        <section class="control-group">
+          <div class="group-label">render</div>
+
+          <label class="select-row" for="mode">
+            <span>--mode</span>
+            <select id="mode">
+              <option value="shape">shape</option>
+              <option value="tone">tone</option>
+            </select>
+          </label>
+
+          <label class="select-row" for="font">
+            <span>--font</span>
+            <select id="font">
+              <option value="default">auto</option>
+            </select>
+          </label>
+
+          <label class="control-row" for="contrast">
+            <span>--contrast</span>
+            <output id="contrastOutput">1.15</output>
+          </label>
+          <input id="contrast" type="range" min="0.2" max="2.5" step="0.05" value="1.15">
+          <input id="contrastValue" class="number-input" type="number" min="0.05" max="5" step="0.05" value="1.15" aria-label="Contrast">
+
+          <label class="control-row" for="gamma">
+            <span>--gamma</span>
+            <output id="gammaOutput">1.00</output>
+          </label>
+          <input id="gamma" type="range" min="0.2" max="2.5" step="0.05" value="1">
+          <input id="gammaValue" class="number-input" type="number" min="0.05" max="5" step="0.05" value="1" aria-label="Gamma">
+
+          <label class="switch-row" for="autocontrast">
+            <input id="autocontrast" type="checkbox" checked>
+            <span>--autocontrast</span>
+          </label>
+
+          <label class="switch-row" for="invert">
+            <input id="invert" type="checkbox">
+            <span>--invert</span>
+          </label>
+        </section>
+
+        <section id="cropControls" class="control-group" hidden>
+          <div class="group-label">crop</div>
+          <div class="crop-grid">
+            <label>x1 <input id="left" class="number-input" type="number" min="0"></label>
+            <label>y1 <input id="top" class="number-input" type="number" min="0"></label>
+            <label>x2 <input id="right" class="number-input" type="number" min="1"></label>
+            <label>y2 <input id="bottom" class="number-input" type="number" min="1"></label>
+          </div>
+          <button id="clearCrop" class="command-button danger" type="button">[ clear crop ]</button>
+        </section>
+
+        <button id="reset" class="command-button reset-button" type="button">[ reset options ]</button>
+      </aside>
+
+      <main class="workspace">
+        <div id="error" class="error-line" role="alert" hidden></div>
+
+        <div class="pane-grid" id="dropzone">
+          <section class="pane source-pane">
+            <div class="pane-title">
+              <span>source.img</span>
+              <span class="muted">drag to crop</span>
+            </div>
+            <div class="source-viewport">
+              <div id="sourceWrap" class="source-wrap">
+                <img id="source" alt="Input image" draggable="false">
+                <div id="cropBox" class="crop-box" aria-hidden="true"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="pane output-pane">
+            <div class="pane-title">
+              <span>stdout</span>
+              <div class="tab-switch" role="tablist" aria-label="Output view">
+                <button id="imageTab" class="tab active" type="button" role="tab" aria-selected="true">preview</button>
+                <button id="textTab" class="tab" type="button" role="tab" aria-selected="false">text</button>
+              </div>
+            </div>
+            <div id="previewBody" class="preview-viewport">
+              <img id="preview" alt="ASCII preview">
+              <pre id="textPreview" hidden></pre>
+            </div>
+          </section>
+        </div>
+
+        <div class="output-bar">
+          <div id="stats" class="stats">40 cols</div>
+          <div class="actions">
+            <button id="copy" class="command-button" type="button" disabled>[ copy ]</button>
+            <button id="saveText" class="command-button" type="button" disabled>[ .txt ]</button>
+            <button id="savePng" class="command-button" type="button" disabled>[ .png ]</button>
+          </div>
+        </div>
+
+        <div class="help-line">
+          <span class="prompt-char">#</span>
+          <span>drop an image anywhere · drag on source to crop · processing stays on localhost</span>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
